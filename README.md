@@ -68,19 +68,22 @@ Labels are in test_set/labels.json, keyed by file name, with each card's corners
 
 ## Generator Default Attribute Breakdown
 
-| Augmentation | Share of scenes | Breakdown | Options |
+| Scene content | Share of scenes | Breakdown | Options |
 | --- | --- | --- | --- |
-| **Scene content** |  |  |  |
 | Layout | Every scene | Grid 62%, scatter 23%, few cards 15% | --only-layouts |
 | Background | Every scene | Wood 28%, rug 21%, fabric 14%, solid table 14%, tile 14%, felt 10% | --only-backgrounds |
 | Distractors | 35% | 1–4 objects (45/30/15/10%): envelope 19%, playing card 14%, book 12%, game card 10%, index card 10%, e-reader 8%, business card 8%, letter 7%, receipt 6%, photo print 5%, coaster 3% | --distractor-prob, --only-distractors |
 | Occluders | 30% | 1–3 objects (60/30/10%): finger 36%, coin 18%, paper 18%, phone 14%, pen 14% | SceneConfig.occluder_prob |
-| **Lighting** |  |  |  |
+
+| Lighting | Share of scenes | Breakdown | Options |
+| --- | --- | --- | --- |
 | Lighting setup | Every scene | Neutral room 23%, window daylight 17%, overcast 14%, warm room 12%, fluorescent 12%, mixed warm and cool 9%, dim lamp 7%, phone flash 6% | --only-rigs |
 | Glossy cards | 30% | 75% of those (22.5% of all scenes) have a lamp aimed so glare lands on the cards; 70% have a linen texture | --glossy-prob, SceneConfig.glare_light_prob |
 | Photographer's shadow | 35% | Strength 0.7–1.0 | Fixed in scene.py |
 | Off-frame object shadow | 31% | At least one, from two independent chances of 25% and 8% | Fixed in scene.py |
-| **Camera** |  |  |  |
+
+| Camera | Share of scenes | Breakdown | Options |
+| --- | --- | --- | --- |
 | Camera tilt | Every scene | Off straight down: under 10° 52%, 10–20° 32%, 20–30° 12%, over 30° 3% (capped at 42°) | --tilt-range LO,HI (uniform; seated scenes use 40,65) |
 | Camera direction | Every scene | Square to the layout (±5°) for 80% of grid and few-card scenes, otherwise any direction | Fixed in scene.py |
 | Camera roll | Every scene | Normal, standard deviation 4° | Fixed in camera.py |
