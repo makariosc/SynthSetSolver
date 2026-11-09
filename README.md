@@ -10,8 +10,6 @@ These generated images are then used to fine-tune an Ultralytics YOLO26n model f
 
 ## Card generation
 
-To run the card generator:
-
 ```sh
 uv run scripts/generate.py -n 48 --out data/synth/preview    # images + JSON labels
 uv run scripts/preview.py data/synth/preview                 # label overlays + contact sheets
@@ -20,8 +18,6 @@ uv run scripts/preview.py data/synth/preview                 # label overlays + 
 The card generator comes with a number of options for configuring layout and scene augmentations. See [here](#generator-default-attribute-breakdown) for more details.
 
 ## Training
-
-To run training:
 
 ```sh
 UV_PROJECT_ENVIRONMENT=.venv-train uv sync --group train   # separate env for training
