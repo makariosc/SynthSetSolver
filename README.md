@@ -1,10 +1,10 @@
-# setsolver
+# SynthSetSolver
 
 Photo of SET cards → detected cards → valid sets. A YOLO26n-pose detector (box + 4
 corners) and an EfficientNet-B0 classifier (number, color, shape, shading), both trained
 only on procedurally rendered photos with exact labels.
 
-**Try it:** https://makariosc.github.io/setsolver/ — runs in the browser with ONNX Runtime
+**Try it:** https://makariosc.github.io/SynthSetSolver/ — runs in the browser with ONNX Runtime
 Web (WebGPU, falling back to WASM), so photos never leave the device. Results are
 spoiler-safe: it shows the card count and reveals sets or hints on request.
 
