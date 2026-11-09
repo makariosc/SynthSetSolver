@@ -1,0 +1,193 @@
+[
+ {
+  "file": "anything-here.jpeg",
+  "site": "reddit",
+  "post": "https://www.reddit.com/r/SetCardGame/s/HKPegBXQ7L",
+  "post_title": "Anything here?",
+  "url": "https://i.redd.it/znq4j67v6m7g1.jpeg",
+  "sha256": "660033987532d3dcebfa8881747b3ccf8eb4b2f5166b9874381981e67c241a5c",
+  "resize": [
+   2286,
+   1715
+  ],
+  "crop": [
+   221,
+   236,
+   1858,
+   1472
+  ]
+ },
+ {
+  "file": "family-dispute.jpeg",
+  "site": "reddit",
+  "post": "https://www.reddit.com/r/SetCardGame/s/43BCLXm4WF",
+  "post_title": "Please help settle a family dispute",
+  "url": "https://i.redd.it/ibbopcqpnpbf1.jpeg",
+  "sha256": "fa554d1085465c4861a3ded8473d467f964f350cd792efa9b6ae0267da1fa44e",
+  "resize": [
+   1080,
+   1920
+  ]
+ },
+ {
+  "file": "find-the-set.jpeg",
+  "site": "reddit",
+  "post": "https://www.reddit.com/r/puzzles/comments/1gj5wen/find_the_set/",
+  "url": "https://i.redd.it/nkhfxpo28tyd1.jpeg",
+  "sha256": "c16a9a9ee6271d8ad7ae7b969d07605d4b5bc092e343defe2a57079ec29f4af2",
+  "resize": [
+   1640,
+   2048
+  ]
+ },
+ {
+  "file": "one_in_25000.jpeg",
+  "site": "reddit",
+  "post": "https://www.reddit.com/r/SetCardGame/comments/17clifj/1_in_2500/",
+  "url": "https://i.redd.it/3g0az7c8afvb1.jpg",
+  "sha256": "8649d6c68df46e662f55bd8d053dda7041285b8416c787fbb524ac88978d330e",
+  "resize": [
+   1080,
+   1244
+  ]
+ },
+ {
+  "file": "stackoverflow_one.jpg",
+  "site": "stackoverflow",
+  "post": "https://stackoverflow.com/questions/75124161/how-to-detect-game-cards-in-image",
+  "author": "ryden",
+  "license": "CC BY-SA 4.0",
+  "url": "https://i.sstatic.net/9B6hJ.jpg",
+  "sha256": "126a05f0cb50d74e2be4c765d296f8822807f646c190c8d9cd854b5e9f6f7c51"
+ },
+ {
+  "file": "stackoverflow_two.jpg",
+  "site": "stackoverflow",
+  "post": "https://stackoverflow.com/questions/75124161/how-to-detect-game-cards-in-image",
+  "author": "ryden",
+  "license": "CC BY-SA 4.0",
+  "url": "https://i.sstatic.net/Ttpvb.jpg",
+  "sha256": "28a772d2535138ad0a82aed7d44913f853a1aeb219c955f94abf41b8ff92a6fe"
+ },
+ {
+  "file": "couldnt-find-a-set.jpg",
+  "site": "reddit",
+  "post": "https://www.reddit.com/r/puzzles/comments/nz2816/anyone_familiar_with_set_we_couldnt_find_a_set/",
+  "url": "https://i.redd.it/m7v4ngjrp2571.jpg",
+  "sha256": "1263efce0fc310a82ee12f1a6d687779b5f0c7d426785b49b0c94ac4cc95d58e"
+ },
+ {
+  "file": "just-dealt-no-set.jpeg",
+  "site": "reddit",
+  "post_title": "Just dealt this game of Set, the odds of there being no set...",
+  "url": "https://i.redd.it/12f2atl1wgwc1.jpeg",
+  "sha256": "2166190583c7ffffe63a014a8ef10369949a5d69a1b60f432c52c433e72a5f5d"
+ },
+ {
+  "file": "is-there-a-set.jpeg",
+  "site": "reddit",
+  "post_title": "Is there a set?",
+  "url": "https://i.redd.it/qcdokvlhxe9g1.jpeg",
+  "sha256": "93646c0aad7bc840bcddedbd5eb03f9daef6dad0d4b4d4103ce40e5315b56007"
+ },
+ {
+  "file": "chances-not-a-set.jpg",
+  "site": "reddit",
+  "post_title": "[Request] What are the chances there's not a set?",
+  "url": "https://i.redd.it/nnt6lsyfppod1.jpg",
+  "sha256": "6e2bdad1a6e53377b3b567fb039bb56426e8689290e1d06cbd80334bd72f641e"
+ },
+ {
+  "file": "mitadmissions-2014.jpg",
+  "site": "mitadmissions.org",
+  "license": "unknown",
+  "url": "https://mitadmissions.org/wp-content/uploads/2014/10/2014-09-25-01_16_53.jpg",
+  "sha256": "ca880cc8e04224b088cdbab84235775af9c21768da7dd4ef82d92149cfe798be"
+ },
+ {
+  "file": "geekyhobbies-set-scenario.jpg",
+  "site": "geekyhobbies.com",
+  "license": "unknown",
+  "url": "https://www.geekyhobbies.com/wp-content/uploads/2014/10/Set-Scenario.jpg",
+  "sha256": "cbe1586df9bd0b02b5cb27c93be4134f031f4ae8758e9d38c4a75b804d641819"
+ },
+ {
+  "file": "liveotherwise-2021.jpg",
+  "site": "liveotherwise.co.uk",
+  "license": "unknown",
+  "url": "https://liveotherwise.co.uk/wp-content/uploads/2021/10/IMG_20210914_105954.jpg",
+  "sha256": "33d440f334f22181b7d335026d21558d5fdb5d82fbc0b7f758124dede176db58"
+ },
+ {
+  "file": "is-this-a-set.jpg",
+  "site": "reddit",
+  "post_title": "Is this a set?",
+  "url": "https://i.redd.it/9w4ezrlh4jgd1.jpg",
+  "sha256": "3cf1b0e7758b785e7d6ea0cb597cef76f0bc4d7dafaad5b6279c2208917c6b8f"
+ },
+ {
+  "file": "is-this-a-set-2.jpg",
+  "site": "reddit",
+  "post_title": "Is this a set? (second image, same post as is-this-a-set.jpg)",
+  "url": "https://i.redd.it/zfwryrlh4jgd1.jpg",
+  "sha256": "879cdc5ebc62f3daf0dfad6e51092ebce4d6c2be2d6eba4e03cdd9d37edb5edd"
+ },
+ {
+  "file": "help-me-find-a-set.jpeg",
+  "site": "reddit",
+  "post_title": "Could someone help me find a set?",
+  "url": "https://i.redd.it/bee878vu9c3e1.jpeg",
+  "sha256": "134fb1cef2f10b4c5aca794ea1fc88ae43cab5e785d082eedb5ad989f95ef7ee"
+ },
+ {
+  "file": "geekyhobbies-finding-a-set.jpg",
+  "site": "geekyhobbies.com",
+  "license": "unknown",
+  "url": "https://www.geekyhobbies.com/wp-content/uploads/2025/03/Set-Finding-a-Set.jpg",
+  "sha256": "7f57aff260dfc9ca1ea26779c1d9cebbead1bbebb12a3cef3fcc238ea5dadc39"
+ },
+ {
+  "file": "is-there-a-set-here.jpeg",
+  "site": "reddit",
+  "post_title": "Is there a set here?",
+  "url": "https://i.redd.it/m4u0fs40ex5f1.jpeg",
+  "sha256": "2ba899c403920a4da8baec5b7a6b0f305ffd52b82ab8e66699c50777afafa3a4"
+ },
+ {
+  "file": "reddit-hu5zgtbjmgmf1.jpeg",
+  "site": "reddit",
+  "url": "https://i.redd.it/hu5zgtbjmgmf1.jpeg",
+  "sha256": "c6846b0d4a1100716b47ece4701f44e72ef6b1bae7724e94c44a06dcf4fb3c0c"
+ },
+ {
+  "file": "boardgamedragons-find-the-set.jpg",
+  "site": "boardgamedragons.com",
+  "license": "unknown",
+  "url": "https://i0.wp.com/boardgamedragons.com/wp-content/uploads/2012/05/find-the-set-horiz1.jpg",
+  "sha256": "f6fd53d26671e25cbac2d239443136274ae68937e468153c2567d480320cbef6"
+ },
+ {
+  "file": "full_deck_table.png",
+  "site": "reddit",
+  "post_title": "Every 3 in a row in each box is a set and...",
+  "url": "https://i.redd.it/7mqlxdpg9zrh1.jpeg",
+  "sha256": "24fafe53af7320b9e23ca9e517f5dc967619dd5b35644549a2bc2d04d85edf08",
+  "resize": [
+   1080,
+   1440
+  ]
+ },
+ {
+  "file": "is-this-a-set-3.jpeg",
+  "site": "reddit",
+  "post_title": "Is this a set?",
+  "url": "https://i.redd.it/hwjcekyby00i1.jpeg",
+  "sha256": "fa156a399771f8d8203a16afd3bc5530fefe4ff970d91c5574b888ab95c416aa"
+ },
+ {
+  "file": "full_deck_floor.jpeg",
+  "site": "reddit",
+  "url": "https://i.redd.it/jptyg8k0zprh1.jpeg",
+  "sha256": "d6a9f186c32fe5800ea989831c1913421c6f0f1f8d910fc48b1b5896f49d0e59"
+ }
+]

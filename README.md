@@ -72,6 +72,24 @@ To ship a model, commit `web/models/meta.json` and the two files it names, then 
 `main`; `.github/workflows/pages.yml` deploys. The detector stays fp32 because fp16 shifts
 corners on WebGPU; the classifier is fp16.
 
+## Test set
+
+37 real photos with 449 scored cards. 14 are my own and are bundled in `test_set/own/`
+(stored with [Git LFS](https://git-lfs.com), so install it before cloning). The
+other 23 belong to their original posters, so this repo holds only their labels and links.
+
+```sh
+uv run scripts/download_test_set.py --out data/real_test
+```
+
+This copies the bundled photos and downloads the rest, checking each download against its
+recorded hash. Five photos are resized or cropped to match the versions that were labeled.
+
+Labels are in `test_set/labels.json`, keyed by file name, with each card's corners
+(image px), number, color, shape and shading. Only cards with `counted: true` are scored.
+Sources, authors and licenses are in `test_set/sources.json`. A link may stop working if
+its owner removes the image.
+
 ## Extending
 
 Backgrounds, lighting rigs, layouts, distractors and occluders are plugins, registered
