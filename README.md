@@ -15,7 +15,7 @@ uv run scripts/generate.py -n 48 --out data/synth/preview    # images + JSON lab
 uv run scripts/preview.py data/synth/preview                 # label overlays + contact sheets
 ```
 
-The card generator comes with a number of options for configuring layout and scene augmentations. See [here](#generator-default-attribute-breakdown) for more details.
+The card generator comes with a number of options for configuring layout and scene augmentations. See [here](#test-set) for more details.
 
 ## Training
 
