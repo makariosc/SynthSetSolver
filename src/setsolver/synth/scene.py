@@ -26,6 +26,9 @@ from .sensor import develop
 from .surface import CardFinish, render_finish
 
 MAX_BG_PIXELS = 9e6  # cap on the table-surface canvas
+MIN_DEPTH_MM = 50.0  # objects reaching closer than this to the lens (or behind it) are out of view: not drawn.
+                     # Low, oblique cameras (seated shots) can sit right above part of the layout, where
+                     # projection blows up (a card under the phone once asked for a ~20 GB shadow blur).
 
 
 @dataclass
@@ -45,6 +48,7 @@ class SceneConfig:
     rigs: list[str] | None = None
     layouts: list[str] | None = None
     distractors: list[str] | None = None
+    tilt_range_deg: tuple[float, float] | None = None  # override camera tilt (deg off straight down), e.g. seated shots
 
 
 def _tex_to_plane(center_xy: np.ndarray, angle: float, w_mm: float, h_mm: float, ppm: float) -> np.ndarray:
@@ -317,7 +321,7 @@ def generate_scene(rng: np.random.Generator, cfg: SceneConfig = SceneConfig()) -
         occupancy = min(occupancy, rng.uniform(0.45, 0.85))  # close-ups of 1-2 cards don't fill the frame
     def frame(w, h, occupancy, offset):
         for _ in range(20):
-            cam = sample_camera(rng, w, h, corners_all, occupancy, tuple(offset), azimuth)
+            cam = sample_camera(rng, w, h, corners_all, occupancy, tuple(offset), azimuth, cfg.tilt_range_deg)
             px = cam.project_plane(corners_all)
             margin = 0.01 * min(w, h)
             inside = (px[:, 0] >= margin) & (px[:, 0] <= w - margin) & (px[:, 1] >= margin) & (px[:, 1] <= h - margin)
@@ -390,6 +394,8 @@ def generate_scene(rng: np.random.Generator, cfg: SceneConfig = SceneConfig()) -
 
     def draw_distractor(d: Distractor, center_xy, angle):
         dw, dh = d.size_mm
+        if cam.depth(_rect_corners(center_xy, angle, dw, dh)).min() < MIN_DEPTH_MM:
+            return False
         corners_ss = cam_ss.project_plane(_rect_corners(center_xy, angle, dw, dh))
         mag = _magnification(corners_ss, dw, dh)
         ppm = float(min(np.clip(mag, 2, 16), np.sqrt(8e6 / (dw * dh))))
@@ -410,6 +416,9 @@ def generate_scene(rng: np.random.Generator, cfg: SceneConfig = SceneConfig()) -
 
     # --- cards, bottom to top
     for k, (card, p) in enumerate(zip(cards, placements)):
+        if cam.depth(p.corners()).min() < MIN_DEPTH_MM:
+            mm_to_px.append(0.0)        # under / behind the camera: not in the photo (visible_fraction 0)
+            continue
         corners_ss = cam_ss.project_plane(p.corners())
         mag = _magnification(corners_ss, CARD_W_MM, CARD_H_MM)
         mm_to_px.append(mag)

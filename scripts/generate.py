@@ -2,6 +2,7 @@
 
     uv run scripts/generate.py -n 48 --out data/synth/preview
     uv run scripts/generate.py -n 10 --only-backgrounds rug,wood --seed 7
+    uv run scripts/generate.py -n 300 --tilt-range 40,65 --out data/synth/seated_eval   # seated-player angles
 
 Image i is generated from seed (seed, i), so any single image can be
 reproduced exactly regardless of worker count.
@@ -55,6 +56,8 @@ def main():
     ap.add_argument("--only-distractors", type=lambda s: s.split(","), default=None)
     ap.add_argument("--distractor-prob", type=float, default=None, help="override SceneConfig.distractor_prob")
     ap.add_argument("--glossy-prob", type=float, default=None, help="override SceneConfig.glossy_prob")
+    ap.add_argument("--tilt-range", type=lambda s: tuple(float(v) for v in s.split(",")), default=None,
+                    help="camera tilt LO,HI degrees off straight down, uniform (e.g. 40,65: a seated player's shot)")
     ap.add_argument("--supersample", type=int, default=2,
                     help="render at N x the output size (2: crisper fine detail for classifier crops; "
                          "1: ~3.5x faster, plenty for detector training at 640 px)")
@@ -70,6 +73,7 @@ def main():
         layouts=a.only_layouts,
         distractors=a.only_distractors,
         supersample=a.supersample,
+        tilt_range_deg=a.tilt_range,
     )
     if a.distractor_prob is not None:
         cfg.distractor_prob = a.distractor_prob

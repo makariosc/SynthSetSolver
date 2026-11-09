@@ -45,6 +45,12 @@ class Camera:
         p = np.column_stack([pts_mm, np.ones(len(pts_mm))]) @ self.H.T
         return p[:, :2] / p[:, 2:3]
 
+    def depth(self, pts_mm: np.ndarray) -> np.ndarray:
+        """Distance (mm) of table points in front of the camera along its optical
+        axis; <= 0 means at or behind the lens, where projection is meaningless."""
+        P = np.column_stack([pts_mm, np.zeros(len(pts_mm))])
+        return (P - self.C) @ self.R[2]
+
     def unproject_to_plane(self, pts_px: np.ndarray) -> np.ndarray:
         Hi = np.linalg.inv(self.H)
         p = np.column_stack([pts_px, np.ones(len(pts_px))]) @ Hi.T
@@ -103,6 +109,7 @@ def sample_camera(
     occupancy: float,
     offset: tuple[float, float] = (0.0, 0.0),
     azimuth: float | None = None,
+    tilt_range_deg: tuple[float, float] | None = None,
 ) -> Camera:
     """Sample a phone-like handheld camera and frame `points_mm` (the card corners).
 
@@ -112,10 +119,27 @@ def sample_camera(
     size from the image center).
 
     Tilt is mostly near top-down (the typical "photo of the table" shot),
-    with a tail toward oblique views.
+    with a tail toward oblique views. `tilt_range_deg` instead draws it
+    uniformly from (lo, hi) degrees off straight down (e.g. a seated player's
+    shot); if the frame would then show the horizon (the table plane has no
+    far edge), tilt is backed off 2 degrees at a time until it doesn't.
     """
     fov = float(rng.choice([rng.uniform(64, 80), rng.uniform(45, 64)], p=[0.85, 0.15]))
+    if tilt_range_deg is not None:
+        tilt_deg = float(rng.uniform(*tilt_range_deg))
+        while True:
+            try:
+                return _frame_camera(rng, width, height, points_mm, occupancy, offset, azimuth, fov, np.radians(tilt_deg))
+            except AssertionError:
+                if tilt_deg <= tilt_range_deg[0] - 20:
+                    raise
+                tilt_deg -= 2.0
     tilt = np.radians(min(abs(rng.normal(0, 14)), 42.0))
+    return _frame_camera(rng, width, height, points_mm, occupancy, offset, azimuth, fov, tilt)
+
+
+def _frame_camera(rng, width, height, points_mm, occupancy, offset, azimuth, fov, tilt) -> Camera:
+    """Solve distance and aim for a sampled pose (see sample_camera)."""
     if azimuth is None:
         azimuth = rng.uniform(0, 2 * np.pi)
     roll = np.radians(rng.normal(0, 4))
