@@ -50,7 +50,7 @@ To ship a model, commit web/models/meta.json and the two files it names, then pu
 
 ## Test set
 
-37 real photos with 449 scored cards. 14 are my own and are bundled in test_set/own/ (stored with Git LFS, so install it before cloning). The other 23 belong to their original posters, so this repo holds only their labels and links.
+37 real photos with 449 scored cards. 14 are my own and are bundled in test_set/own/ (stored with Git LFS, so install it before cloning). The other 23 were found online, and I don't want to deal with any legal difficulties of re-hosting them here, so this repo holds only their labels and links.
 
 ```sh
 uv run scripts/download_test_set.py --out data/real_test
