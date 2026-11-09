@@ -10,21 +10,17 @@ These generated images are then used to fine-tune an Ultralytics YOLO26n model f
 
 To run the card generator:
 
-uv run scripts/generate.py -n 48 --out data/synth/preview    # images + JSON labels
-
 ```sh
+uv run scripts/generate.py -n 48 --out data/synth/preview    # images + JSON labels
 uv run scripts/preview.py data/synth/preview                 # label overlays + contact sheets
 ```
-
-
 
 The card generator comes with a number of options for configuring layout and scene augmentations. See [here](#generator-default-attribute-breakdown) for more details.
 
 To run training:
 
-UV_PROJECT_ENVIRONMENT=.venv-train uv sync --group train   # separate env for training
-
 ```sh
+UV_PROJECT_ENVIRONMENT=.venv-train uv sync --group train   # separate env for training
 # detector
 uv run scripts/generate.py -n 50000 --seed 1 --out data/synth/train --width 960 --height 1280
 uv run scripts/generate.py -n 1000  --seed 2 --out data/synth/val   --width 960 --height 1280
@@ -36,8 +32,6 @@ uv run scripts/extract_crops.py data/synth/val   --out data/crops/val --jitter 0
 uv run scripts/extract_crops.py data/synth/val   --out data/crops/val_jitter
 .venv-train/bin/python scripts/train_classifier.py --backbone efficientnet_b0 --epochs 15 --name effb0
 ```
-
-
 
 ## Web app
 
