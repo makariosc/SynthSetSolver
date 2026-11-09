@@ -1,0 +1,1 @@
+test_set/own/*.jpeg filter=lfs diff=lfs merge=lfs -text
