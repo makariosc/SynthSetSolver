@@ -1,12 +1,14 @@
 # SynthSetSolver
 
-The Set Checker webapp can be found at https://makariosc.github.io/setchecker. Give it a try!
+The Set Checker webapp can be found at https://makariosc.github.io/setsolver. Give it a try!
 
 The heart of SynthSetSolver is the synthetic data generator: a generator that renders Set cards within a procedurally generated scene. Each scene is a camera looking at a flat table, with one homography shared by everything on it. The renderer (src/setsolver/synth/) samples deck style, layout, camera, table surface, card finish (including glossy glare), lighting and shadows, occluders (fingers, coins, pens), distractors (envelopes, playing cards, receipts) and a phone camera pipeline (blur, noise, white balance, JPEG). Labels in labels/NNNNNN.json hold each card's attributes, corners and visibility, plus all scene parameters.
 
 These generated images are then used to fine-tune an Ultralytics YOLO26n model for detection, and an EfficientNet-B0 model for classification of each of the four card attributes. This pipeline achieves a 99.9% accuracy on the synthetic test set, and a 100% accuracy with no false positives on an independent test set compiled from real-life images taken by myself and off the internet. Included in this repo is a script for compiling this test set below (images not re-hosted here due to licensing issues).
 
 ---
+
+## Card generation
 
 To run the card generator:
 
@@ -16,6 +18,8 @@ uv run scripts/preview.py data/synth/preview                 # label overlays + 
 ```
 
 The card generator comes with a number of options for configuring layout and scene augmentations. See [here](#generator-default-attribute-breakdown) for more details.
+
+## Training
 
 To run training:
 
