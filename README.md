@@ -1,6 +1,8 @@
 # SynthSetSolver
 
-The Set Checker webapp can be found at https://makariosc.github.io/setsolver. Give it a try!
+The Set Checker webapp can be found at https://makariosc.github.io/setsolver. Give it a try! 
+
+And the writeup can be found [here](https://makariosc.github.io/2026/11/10/synthsetsolver.html).
 
 The heart of SynthSetSolver is the synthetic data generator: a generator that renders Set cards within a procedurally generated scene. Each scene is a camera looking at a flat table, with one homography shared by everything on it. The renderer (src/setsolver/synth/) samples deck style, layout, camera, table surface, card finish, lighting and shadows, occluders, distractors, and a phone camera pipeline (blur, noise, white balance). Labels in labels/NNNNNN.json hold each card's attributes, corners and visibility, plus all scene parameters.
 
@@ -46,11 +48,11 @@ node web/tests/test.mjs       # set-finding + geometry tests
 
 A card counts if detection is ≥ 0.80 and every attribute is ≥ 0.85. web/js/pipeline.js mirrors src/setsolver/crops.py, so keep the two in step.
 
-To ship a model, commit web/models/meta.json and the two files it names, then push to main; .github/workflows/pages.yml deploys. The detector stays fp32 because fp16 shifts corners on WebGPU; the classifier is fp16.
+To ship a model, commit web/models/meta.json and the two files it names, then push to main; .github/workflows/pages.yml deploys.
 
 ## Test set
 
-37 real photos with 449 scored cards. 14 are my own and are bundled in test_set/own/ (stored with Git LFS, so install it before cloning). The other 23 were found online, and I don't want to deal with any legal difficulties of re-hosting them here, so this repo holds only their labels and links.
+37 real photos with 449 scored cards. 14 are my own and are bundled in test_set/own/ (stored with Git LFS, so install it before cloning). The other 23 were found online, and I don't want to deal with any legal difficulties of re-hosting them here, so this repo holds only their labels and links. But I've provided a script to do the downloads automatically:
 
 ```sh
 uv run scripts/download_test_set.py --out data/real_test
