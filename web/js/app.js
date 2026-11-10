@@ -1,5 +1,5 @@
 import { analyze, centroid, DETECT_MIN_CONFIDENCE, loadModels, MIN_CONFIDENCE } from "./pipeline.js";
-import { findSets } from "./sets.js";
+import { ATTR_KEYS, findSets, findUltrasets } from "./sets.js";
 
 const $ = (id) => document.getElementById(id);
 const SVGNS = "http://www.w3.org/2000/svg";
@@ -13,13 +13,12 @@ const store = {
 const state = {
   ready: false,
   result: null,      // from analyze()
-  sets: [],
-  revealed: false,
+  sets: [],          // sets, or ultrasets when ultra
   shown: new Set(),  // indices of sets whose cards are highlighted
   hint: 0,           // cards revealed by the hint button (0..3)
   focus: null,       // card id highlighted from the debug panel
   debug: store.get("setsolver.debug", false),
-  autoReveal: store.get("setsolver.autoReveal", false),
+  ultra: store.get("setsolver.ultra", false),  // ultrasets: four cards whose two pairs need the same third card
 };
 
 function el(tag, attrs = {}, ...kids) {
@@ -38,6 +37,9 @@ function sv(tag, attrs = {}) {
   return e;
 }
 const cardName = (c) => `${c.number} ${c.color} ${c.shape}${c.number > 1 ? "s" : ""}, ${c.shading}`;
+let attrValues = {};  // attribute -> value names, from the models' meta.json
+const ghostName = (idx) => cardName(Object.fromEntries(ATTR_KEYS.map((k) => [k, attrValues[k][idx[k]]])));
+const groupWord = (n = 1) => (state.ultra ? "ultraset" : "set") + (n === 1 ? "" : "s");
 const pts = (corners) => corners.map((p) => p.join(",")).join(" ");
 const shrinkTo = (corners, f) => { const c = centroid(corners); return corners.map(([x, y]) => [c[0] + (x - c[0]) * f, c[1] + (y - c[1]) * f]); };
 
@@ -45,12 +47,13 @@ const shrinkTo = (corners, f) => { const c = centroid(corners); return corners.m
 
 async function init() {
   $("debugToggle").checked = state.debug;
-  $("autoReveal").checked = state.autoReveal;
+  $("ultraMode").checked = state.ultra;
   try {
-    await loadModels((f, label) => {
+    const meta = await loadModels((f, label) => {
       $("loadingBar").style.width = `${Math.round(f * 100)}%`;
       $("loadingText").textContent = f < 1 ? `${label} ${Math.round(f * 100)}%` : "Ready";
     });
+    attrValues = Object.fromEntries(meta.classifier.attrs);
     state.ready = true;
     $("loading").classList.add("done");
     if (state.pendingFile) handleFile(state.pendingFile);
@@ -96,10 +99,7 @@ async function handleFile(file) {
     const result = await analyze(bitmap);
     result.fileName = file.name;
     state.result = result;
-    state.sets = findSets(result.cards.filter((c) => c.idx && !c.rejected));
-    state.revealed = state.autoReveal;
-    state.shown = new Set();
-    state.hint = 0;
+    findGroups();
     state.focus = null;
     $("resultPanel").hidden = false;
     render();
@@ -110,6 +110,14 @@ async function handleFile(file) {
     showBusy(false);
     bitmap.close?.();
   }
+}
+
+/** Find the sets (or ultrasets) among the counted cards, none highlighted yet. */
+function findGroups() {
+  const counted = state.result.cards.filter((c) => c.idx && !c.rejected);
+  state.sets = state.ultra ? findUltrasets(counted) : findSets(counted);
+  state.shown = new Set();
+  state.hint = 0;
 }
 
 function showBusy(on) { $("busy").hidden = !on; }
@@ -134,12 +142,16 @@ $("newPhotoBtn").addEventListener("click", () => {
 
 // ---------------- controls ----------------
 
-$("revealBtn").addEventListener("click", () => { if (!state.result) return; state.revealed = true; renderResult(); });
-$("autoReveal").addEventListener("change", (e) => {
-  state.autoReveal = e.target.checked;
-  store.set("setsolver.autoReveal", state.autoReveal);
-  if (state.autoReveal && state.result) { state.revealed = true; renderResult(); }
-});
+// the checkbox (before a photo) and the Sets / Ultrasets toggle (after) set the same remembered mode
+function setMode(ultra) {
+  state.ultra = ultra;
+  store.set("setsolver.ultra", ultra);
+  $("ultraMode").checked = ultra;
+  if (state.result) { findGroups(); renderResult(); renderDebug(); }
+}
+$("ultraMode").addEventListener("change", (e) => setMode(e.target.checked));
+$("modeSets").addEventListener("click", () => setMode(false));
+$("modeUltra").addEventListener("click", () => setMode(true));
 $("debugToggle").addEventListener("change", (e) => {
   state.debug = e.target.checked;
   store.set("setsolver.debug", state.debug);
@@ -182,61 +194,85 @@ function renderResult() {
   if (unsure.length) chips.push(el("span", { class: "chip warn" }, `? ${unsure.length} not read confidently`));
   $("chips").replaceChildren(...chips);
 
-  const enough = classified.length >= 3;
-  $("spoiler").hidden = state.revealed || !enough;
-  $("answer").hidden = !(state.revealed && enough) && enough;
+  const need = state.ultra ? 4 : 3;
+  const enough = classified.length >= need;
+  $("modeSets").setAttribute("aria-pressed", String(!state.ultra));
+  $("modeUltra").setAttribute("aria-pressed", String(state.ultra));
+  $("answer").hidden = false;
 
   if (!enough) {
-    $("answer").hidden = false;
     $("headline").textContent = cards.length === 0 ? "No cards found" : "Not enough cards";
     $("subline").textContent = cards.length === 0
       ? "Try again from directly above, with all the cards in the frame and in reasonable light."
       : unsure.length
       ? `Some cards couldn't be read with at least ${Math.round(MIN_CONFIDENCE * 100)}% confidence (marked “?”). Retake closer or in better light.`
+      : state.ultra ? "An ultraset needs four cards. Make sure all the cards are in the photo."
       : "A set needs three cards. Make sure all the cards are in the photo.";
     $("setControls").replaceChildren();
+    updateMoreHint();
     $("hintText").textContent = "";
     drawOverlay();
     return;
   }
 
-  if (state.revealed) {
-    const n = state.sets.length;
-    $("headline").textContent = n === 0 ? "No set here" : `Yes: ${n} set${n === 1 ? "" : "s"}`;
-    const notes = [];
-    if (n === 0) notes.push(cards.length >= 12 ? "Deal three more cards." : "No three of these cards make a set.");
-    if (unsure.length) notes.push(`${unsure.length} card${unsure.length === 1 ? " couldn't" : "s couldn't"} be read with at least ${Math.round(MIN_CONFIDENCE * 100)}% confidence and ${unsure.length === 1 ? "isn't" : "aren't"} counted (marked “?”). Retake closer or in better light.`);
-    $("subline").textContent = notes.join(" ");
-    renderSetControls();
-  }
+  const n = state.sets.length;
+  $("headline").textContent = `${n} ${groupWord(n)} found`;
+  const notes = [];
+  if (n === 0) notes.push(state.ultra ? "No two pairs of these cards need the same third card."
+    : cards.length >= 12 ? "Deal three more cards." : "No three of these cards make a set.");
+  if (unsure.length) notes.push(`${unsure.length} card${unsure.length === 1 ? " couldn't" : "s couldn't"} be read with at least ${Math.round(MIN_CONFIDENCE * 100)}% confidence and ${unsure.length === 1 ? "isn't" : "aren't"} counted (marked “?”). Retake closer or in better light.`);
+  $("subline").textContent = notes.join(" ");
+  renderSetControls();
   drawOverlay();
 }
 
 function renderSetControls() {
   const box = $("setControls");
   const n = state.sets.length;
-  if (!n) { box.replaceChildren(); $("hintText").textContent = ""; return; }
+  if (!n) { box.replaceChildren(); $("hintText").textContent = ""; updateMoreHint(); return; }
+  const size = state.sets[0].ids.length;
   const btns = [];
   btns.push(el("button", {
     type: "button", class: "btn", "aria-pressed": String(state.hint > 0 && state.shown.size === 0),
-    onclick: () => { state.hint = Math.min(3, state.hint + 1); state.shown.clear(); renderResult(); },
-  }, state.hint === 0 ? "Hint" : state.hint < 3 ? "More hint" : "Hint (full set)"));
+    onclick: () => { state.hint = Math.min(size, state.hint + 1); state.shown.clear(); renderResult(); },
+  }, state.hint === 0 ? "Hint" : state.hint < size ? "More hint" : `Hint (full ${groupWord()})`));
   state.sets.forEach((s, i) => {
     const color = `var(--set-${(i % SET_COLORS) + 1})`;
     btns.push(el("button", {
       type: "button", class: "btn", "aria-pressed": String(state.shown.has(i)),
       onclick: () => { state.shown.has(i) ? state.shown.delete(i) : state.shown.add(i); state.hint = 0; renderResult(); },
-    }, el("span", { class: "swatch", style: `background:${color}` }), `Set ${i + 1}`));
+    }, el("span", { class: "swatch", style: `background:${color}` }), `${state.ultra ? "Ultraset" : "Set"} ${i + 1}`));
   });
   if (n > 1) btns.push(el("button", {
     type: "button", class: "btn",
     onclick: () => { state.shown = state.shown.size === n ? new Set() : new Set(state.sets.map((_, i) => i)); state.hint = 0; renderResult(); },
   }, state.shown.size === n ? "Hide all" : "Show all"));
   box.replaceChildren(...btns);
-  $("hintText").textContent = state.hint === 0 ? "" : state.hint === 1
-    ? "One card that's part of a set is highlighted."
+  updateMoreHint();
+  const ghosts = [...state.shown].filter((i) => state.sets[i].ghost).map((i) => `${state.ultra ? "Ultraset" : "Set"} ${i + 1}: both pairs need ${ghostName(state.sets[i].ghost)}.`);
+  $("hintText").textContent = state.hint === 0 ? ghosts.join(" ")
+    : state.ultra ? (state.hint === 1 ? "One card that's part of an ultraset is highlighted."
+      : state.hint === 2 ? "A pair from an ultraset is highlighted: find another pair that needs the same third card."
+      : state.hint === 3 ? "A pair and one card of the other pair are highlighted: find the fourth card."
+      : `The whole ultraset is highlighted; both pairs need ${ghostName(state.sets[0].ghost)}.`)
+    : state.hint === 1 ? "One card that's part of a set is highlighted."
     : state.hint === 2 ? "Two cards of the same set are highlighted: find the third." : "The whole set is highlighted.";
 }
+
+/** Fade the set buttons' scrolled-off edges and offer "More below" while any are hidden. */
+function updateMoreHint() {
+  const box = $("setControls");
+  const above = box.scrollTop > 2, below = box.scrollTop + box.clientHeight < box.scrollHeight - 2;
+  box.classList.toggle("fade-top", above);
+  box.classList.toggle("fade-bottom", below);
+  $("moreSets").hidden = !below;
+}
+$("setControls").addEventListener("scroll", updateMoreHint, { passive: true });
+window.addEventListener("resize", () => { if (state.result) updateMoreHint(); });
+$("moreSets").addEventListener("click", () => {
+  const box = $("setControls");
+  box.scrollBy({ top: box.clientHeight * 0.8, behavior: "smooth" });
+});
 
 function drawOverlay() {
   const r = state.result;
@@ -254,16 +290,18 @@ function drawOverlay() {
   const layers = new Map();
   [...state.shown].sort((a, b) => a - b).forEach((si) => {
     const color = `var(--set-${(si % SET_COLORS) + 1})`;
-    for (const id of state.sets[si].ids) {
+    state.sets[si].ids.forEach((id, k) => {
       const layer = layers.get(id) || 0;
       layers.set(id, layer + 1);
       const poly = shrinkTo(byId.get(id).corners, 1 - 0.07 * layer);
+      // an ultraset's second pair is dashed, so the two pairs read apart
+      const dash = k >= 2 ? { "stroke-dasharray": "14 8" } : {};
       svg.append(sv("polygon", { points: pts(poly), class: "ov-set", stroke: "rgba(0,0,0,.55)", "stroke-width": 9 }));
-      svg.append(sv("polygon", { points: pts(poly), class: "ov-set", stroke: color }));
-    }
+      svg.append(sv("polygon", { points: pts(poly), class: "ov-set", stroke: color, ...dash }));
+    });
   });
 
-  // progressive hint: 1, 2 or 3 cards of the first set
+  // progressive hint: 1, 2 or 3 cards of the first set (up to 4 of an ultraset, pair first)
   if (state.hint > 0 && state.sets.length) {
     for (const id of state.sets[0].ids.slice(0, state.hint))
       svg.append(sv("polygon", { points: pts(byId.get(id).corners), class: "ov-hint" }));
@@ -334,8 +372,10 @@ function renderDebug() {
   }));
 
   $("debugSets").replaceChildren(state.sets.length
-    ? el("ul", {}, ...state.sets.map((s, i) => el("li", {}, `Set ${i + 1}: cards ${s.ids.map((id) => `#${id + 1}`).join(", ")}`)))
-    : "No sets among the counted cards.");
+    ? el("ul", {}, ...state.sets.map((s, i) => el("li", {}, state.ultra
+      ? `Ultraset ${i + 1}: cards ${s.pairs.map((p) => p.map((id) => `#${id + 1}`).join(" + ")).join(" and ")}, both need ${ghostName(s.ghost)}`
+      : `Set ${i + 1}: cards ${s.ids.map((id) => `#${id + 1}`).join(", ")}`)))
+    : `No ${groupWord(2)} among the counted cards.`);
 }
 
 init();

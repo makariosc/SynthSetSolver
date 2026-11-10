@@ -1,7 +1,7 @@
 // Node tests for the pure JS modules:  node web/tests/test.mjs
 import assert from "node:assert/strict";
 import { centroid, homography, portraitOrder } from "../js/geometry.js";
-import { completeSet, findSets, isSet } from "../js/sets.js";
+import { completeSet, findSets, findUltrasets, isSet } from "../js/sets.js";
 
 let passed = 0;
 const test = (name, fn) => { fn(); passed++; };
@@ -17,6 +17,14 @@ test("every pair completes to a set", () => {
     assert.ok(isSet(deck[i], deck[j], { idx }));
   }
 });
+// each of the 81 cards is the completion of 40 disjoint pairs: 81 * C(40, 2) ultrasets
+test("full deck has 63180 ultrasets", () => {
+  const u = findUltrasets(deck);
+  assert.equal(u.length, 63180);
+  assert.equal(new Set(u.map((x) => [...x.ids].sort((a, b) => a - b).join())).size, u.length, "each group of four once");
+  for (const x of u.slice(0, 500)) for (const [a, b] of x.pairs) assert.ok(isSet(deck[a], deck[b], { idx: x.ghost }));
+});
+test("no ultraset among a set plus one", () => assert.equal(findUltrasets([deck[0], deck[1], deck[2], deck[40]]).length, 0));
 test("known non-set", () => assert.equal(isSet(
   { idx: { number: 0, color: 0, shape: 0, shading: 0 } },
   { idx: { number: 0, color: 0, shape: 0, shading: 1 } },

@@ -111,15 +111,23 @@ main { max-width: 900px; margin: 0 auto; padding: 0 16px 48px; }
 .chip { font-size: 13px; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--border); color: var(--text-2); }
 .chip.warn { color: var(--warn); border-color: currentColor; }
 
-.spoiler { margin-top: 14px; }
+.mode-toggle { display: flex; gap: 8px; margin-top: 12px; }
+.mode-toggle .btn { flex: 1; padding: 8px 12px; min-height: 40px; font-size: 14px; }
 .check { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 14px; color: var(--text-2); }
 .check input { width: 18px; height: 18px; }
 
 .answer { margin-top: 12px; }
 .headline { font-size: 22px; font-weight: 700; margin: 0; }
 .subline { color: var(--text-2); margin: 2px 0 12px; }
-.set-controls { display: flex; flex-wrap: wrap; gap: 8px; }
+/* many sets scroll inside the box, not the page; the padding keeps focus rings unclipped */
+.set-controls { display: flex; flex-wrap: wrap; align-content: flex-start; gap: 8px; max-height: 45vh; overflow-y: auto; padding: 3px; margin: -3px; }
 .set-controls .btn { padding: 8px 12px; min-height: 40px; font-size: 14px; }
+/* fade the edge where more buttons are scrolled out of view */
+.set-controls.fade-bottom { -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 40px), transparent); mask-image: linear-gradient(to bottom, #000 calc(100% - 40px), transparent); }
+.set-controls.fade-top { -webkit-mask-image: linear-gradient(to top, #000 calc(100% - 40px), transparent); mask-image: linear-gradient(to top, #000 calc(100% - 40px), transparent); }
+.set-controls.fade-top.fade-bottom { -webkit-mask-image: linear-gradient(transparent, #000 40px, #000 calc(100% - 40px), transparent); mask-image: linear-gradient(transparent, #000 40px, #000 calc(100% - 40px), transparent); }
+.more-below { align-self: center; margin: 6px auto 0; display: block; border: 0; background: none; font: inherit; font-size: 13px; font-weight: 600; color: var(--accent); cursor: pointer; padding: 2px 8px; }
+.more-below[hidden] { display: none; }
 .swatch { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
 .hint-text { color: var(--text-2); font-size: 14px; margin: 10px 0 0; min-height: 1em; }
 
@@ -158,3 +166,20 @@ main { max-width: 900px; margin: 0 auto; padding: 0 16px 48px; }
 .prob .pb > div { height: 100%; background: var(--accent); border-radius: 3px; }
 .prob .pb.low > div { background: var(--warn); }
 .prob b { color: var(--text); font-weight: 600; text-align: right; }
+
+/* wide screens: photo on the left, results on the right; phones keep the single column */
+@media (min-width: 960px) {
+  .top, main { max-width: 1320px; }
+  .loading, .capture { max-width: 900px; margin-left: auto; margin-right: auto; }
+  .results-main {
+    display: grid; grid-template-columns: minmax(0, max-content) minmax(340px, 420px);
+    justify-content: center; column-gap: 20px; align-items: start;
+  }
+  /* the whole photo fits on screen; the stage shrinks to it so the overlay stays aligned */
+  .stage { width: fit-content; max-width: 100%; }
+  .stage canvas { width: auto; max-width: 100%; max-height: calc(100vh - 90px); }
+  /* the panel is never taller than the photo can be; only the set buttons scroll */
+  .result { position: sticky; top: 12px; display: flex; flex-direction: column; max-height: calc(100vh - 90px); }
+  .result .answer:not([hidden]) { display: flex; flex-direction: column; min-height: 0; flex: 0 1 auto; }
+  .result .set-controls { max-height: none; min-height: 50px; flex: 0 1 auto; }
+}
