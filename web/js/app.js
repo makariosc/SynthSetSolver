@@ -205,7 +205,6 @@ function renderResult() {
     $("headline").textContent = n === 0 ? "No set here" : `Yes: ${n} set${n === 1 ? "" : "s"}`;
     const notes = [];
     if (n === 0) notes.push(cards.length >= 12 ? "Deal three more cards." : "No three of these cards make a set.");
-    if (cut.length) notes.push(`${cut.length} card${cut.length === 1 ? " is" : "s are"} cut off and not counted; retake the photo to include ${cut.length === 1 ? "it" : "them"}.`);
     if (unsure.length) notes.push(`${unsure.length} card${unsure.length === 1 ? " couldn't" : "s couldn't"} be read with at least ${Math.round(MIN_CONFIDENCE * 100)}% confidence and ${unsure.length === 1 ? "isn't" : "aren't"} counted (marked “?”). Retake closer or in better light.`);
     $("subline").textContent = notes.join(" ");
     renderSetControls();
